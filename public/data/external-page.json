@@ -1,0 +1,163 @@
+{
+  "title": "Integrated Project Management and Monitoring System (IPMMS) for GIA Technology Commercialization Projects",
+  "description": "This project focuses on developing an Integrated Project Management and Monitoring System (IPMMS) designed to streamline the management of GIA technology commercialization projects. The system will centralize project data, enable real-time monitoring, improve reporting accuracy, and enhance decision-making to ensure effective resource utilization and successful project implementation.",
+  "subtitle": "A Centralized Digital Platform for Efficient Tracking, Evaluation, and Resource Management",
+  "backgroundImage": {
+    "src": "/images/bg.jpg",
+    "alt": "Abstract academic background with geometric patterns",
+    "overlay": {
+      "enabled": true,
+      "color": "rgba(25, 118, 210, 0.15)",
+      "opacity": 0.8
+    }
+  },
+  "features": [
+    {
+      "title": "Guided Data Entry",
+      "description": "The system asks step-by-step questions so users can enter the required details correctly and consistently.",
+      "icon": "mdi-cursor-pointer"
+    },
+    {
+      "title": "Auto-Organize Information",
+      "description": "Inputs are automatically sorted into the right sections/criteria so nothing gets mixed up.",
+      "icon": "mdi-file-document-edit-outline"
+    },
+    {
+      "title": "Centralized Repository",
+      "description": "All saved entries and files are kept in one place, easy to search, update, and manage by the team.",
+      "icon": "mdi-database-outline"
+    },
+    {
+      "title": "Progress Tracking & Reports",
+      "description": " See what’s already saved and downloaded, and quickly open items to view or edit whenever updates are needed.",
+      "icon": "mdi-chart-timeline-variant"
+    }
+  ],
+  "version": "1.0.0",
+  "author": "IPPMS Development Team",
+  "lastUpdated": "2025-10-16",
+  "theme": {
+    "primaryColor": "#005a84",
+    "secondaryColor": "#E3F2FD"
+  },
+  "ui": {
+    "showNavbar": true,
+    "showFooter": true,
+    "_comment": "Select the navbar component to use: 1, 2, 3, or 4",
+    "navbarComponent": "1",
+    "_footerComment": "Select the footer component to use: 1 or 2",
+    "footerComponent": "1",
+    "navbar": {
+      "title": "DOST-ADN IPPMS",
+      "icon": "mdi-file-certificate-outline",
+      "logo": {
+        "src": "/assets/smart-adn-logo.png",
+        "alt": "SMART-ADN Logo",
+        "width": 32,
+        "height": 32
+      },
+      "color": "primary",
+      "elevation": 2,
+      "density": "comfortable",
+      "navigationItems": [
+        {
+          "_comment": "dont change this",
+          "label": "Features",
+          "action": "scroll",
+          "target": "features"
+        }
+      ],
+      "ctaButton": {
+        "label": "Login/Create Account",
+        "variant": "outlined",
+        "color": "on-primary",
+        "action": "navigate",
+        "_comment": "dont change this /auth cause it is linked to the auth page",
+        "target": "/auth"
+      }
+    },
+    "footer": {
+      "companyName": "Integrated Project Management and Monitoring System",
+      "tagline": "Tracking Innovation. Ensuring Impact.",
+      "icon": "mdi-file-document-check-outline",
+      "color": "grey-darken-3",
+      "copyright": "IPPMS Team. All rights reserved.",
+      "socialLinks": [
+        {
+          "platform": "github",
+          "icon": "mdi-github",
+          "url": "https://github.com",
+          "label": "GitHub"
+        },
+        {
+          "platform": "twitter",
+          "icon": "mdi-twitter",
+          "url": "https://twitter.com",
+          "label": "Twitter"
+        },
+        {
+          "platform": "linkedin",
+          "icon": "mdi-linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        }
+      ],
+      "technologies": [
+        {
+          "name": "OCR Technology",
+          "icon": "mdi-text-recognition",
+          "color": "blue"
+        },
+        {
+          "name": "Document Management",
+          "icon": "mdi-file-cabinet",
+          "color": "indigo"
+        }
+      ],
+      "thesisTeam": {
+        "enabled": true,
+        "title": "Development Team",
+        "subtitle": "Meet the minds behind the IPPMS system",
+        "members": [
+          {
+            "name": "Lead Developer",
+            "role": "System Architect",
+            "avatar": "/images/team/sarah.jpg"
+          },
+          {
+            "name": "OCR Specialist",
+            "role": "AI & Machine Learning Expert",
+            "avatar": "/images/team/michael.jpg"
+          },
+          {
+            "name": "Documentation Expert",
+            "role": "Accreditation Compliance Specialist",
+            "avatar": "/images/team/emma.jpg"
+          }
+        ]
+      }
+    }
+  },
+  "authPage": {
+    "title": "Integrated Project Management and Monitoring System",
+    "subtitle": "Start Exploring the IPPMS Platform",
+    "layout": {
+      "quotePosition": "right"
+    },
+    "quote": {
+      "text": "Quality is never an accident; it is always the result of intelligent effort.",
+      "author": "John Ruskin",
+      "source": "Victorian Era Philosopher",
+      "motivationalText": "Begin your accreditation documentation journey today. Excellence in organization leads to excellence in outcomes."
+    },
+    "backgroundImage": {
+      "src": "/images/bg.jpg",
+      "alt": "Modern office with organized digital documents and OCR technology",
+      "overlay": {
+        "enabled": true,
+        "color": "rgba(25, 118, 210, 0.1)",
+        "opacity": 0.9
+      }
+    }
+  }
+}

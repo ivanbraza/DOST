@@ -1,0 +1,403 @@
+
+<script setup lang="ts">
+import { ref, onMounted, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useTheme } from "vuetify";
+import LoginForm from "@/components/auth/LoginForm.vue";
+import RegisterForm from "@/components/auth/RegisterForm.vue";
+import { useAuthUserStore } from "@/stores/authUser";
+import { createDynamicThemeConfigFromExternal } from "@/themes/index";
+import { useAuthPageController } from "@/controller/authPageController";
+
+// Composables
+const router = useRouter();
+const route = useRoute();
+const authStore = useAuthUserStore();
+const theme = useTheme();
+const { data: authPageData, loading: authPageLoading, error: authPageError, fetchAuthPageData } = useAuthPageController();
+
+// Reactive state
+const isLoginMode = ref(true);
+const themeLoading = ref(true);
+const themeError = ref<string | null>(null);
+const verificationError = ref<string | null>(null);
+const showVerificationDialog = computed(() => !!verificationError.value);
+const resendEmail = ref('');
+const resendLoading = ref(false);
+const resendSuccess = ref(false);
+
+// Computed properties for layout
+const isQuoteOnLeft = computed(() => {
+  return authPageData.value?.layout?.quotePosition === 'left';
+});
+
+const formSectionOrder = computed(() => {
+  return isQuoteOnLeft.value ? 2 : 1;
+});
+
+const quoteSectionOrder = computed(() => {
+  return isQuoteOnLeft.value ? 1 : 2;
+});
+
+// Background image style
+const backgroundImageStyle = computed(() => {
+  if (!authPageData.value?.backgroundImage) return {};
+
+  const { src, overlay } = authPageData.value.backgroundImage;
+  let style = `background-image: url('${src}'); background-size: cover; background-position: center; background-repeat: no-repeat;`;
+
+  if (overlay?.enabled) {
+    style += ` background-blend-mode: overlay; background-color: ${overlay.color};`;
+  }
+
+  return style;
+});
+
+// Methods
+const switchToRegister = () => {
+  isLoginMode.value = false;
+  // Update URL without navigation
+  router.replace({ query: { mode: "register" } });
+};
+
+const switchToLogin = () => {
+  isLoginMode.value = true;
+  // Update URL without navigation
+  router.replace({ query: { mode: "login" } });
+};
+
+const toggleMode = () => {
+  if (isLoginMode.value) {
+    switchToRegister();
+  } else {
+    switchToLogin();
+  }
+};
+
+const navigateHome = () => {
+  router.push("/");
+};
+
+const handleResendVerification = async () => {
+  if (!resendEmail.value) return;
+  
+  resendLoading.value = true;
+  resendSuccess.value = false;
+  
+  try {
+    const result = await authStore.resendVerificationEmail(resendEmail.value);
+    if (result.error) {
+      verificationError.value = result.error.message || 'Failed to resend verification email';
+    } else {
+      resendSuccess.value = true;
+      verificationError.value = null;
+    }
+  } catch (error: any) {
+    verificationError.value = error.message || 'An unexpected error occurred';
+  } finally {
+    resendLoading.value = false;
+  }
+};
+
+const clearVerificationError = () => {
+  verificationError.value = null;
+  resendSuccess.value = false;
+  // Clear the hash from URL
+  router.replace({ path: '/auth', query: route.query });
+};
+
+// Load dynamic theme configuration
+const loadDynamicTheme = async () => {
+  try {
+    themeLoading.value = true;
+    themeError.value = null;
+
+    const themeConfig = await createDynamicThemeConfigFromExternal();
+
+    // Apply the theme configuration to Vuetify
+    theme.themes.value.light = themeConfig.themes.light;
+    theme.themes.value.dark = themeConfig.themes.dark;
+
+    console.log('Dynamic theme loaded successfully');
+  } catch (error) {
+    console.error('Failed to load dynamic theme:', error);
+    themeError.value = error instanceof Error ? error.message : 'Failed to load theme';
+  } finally {
+    themeLoading.value = false;
+  }
+};
+
+// Lifecycle
+onMounted(async () => {
+  // Load auth page data first
+  await fetchAuthPageData();
+
+  // Load dynamic theme configuration
+  await loadDynamicTheme();
+
+  // Set initial mode based on query parameter
+  const mode = route.query.mode;
+  if (mode === "register") {
+    isLoginMode.value = false;
+  } else {
+    isLoginMode.value = true;
+  }
+
+  // Check for verification errors in URL hash
+  const hash = window.location.hash;
+  if (hash.includes('error=access_denied') && hash.includes('otp_expired')) {
+    const params = new URLSearchParams(hash.substring(1));
+    const errorDesc = params.get('error_description');
+    verificationError.value = errorDesc?.replace(/\+/g, ' ') || 'Email verification link has expired';
+  }
+});
+
+// This page uses the default layout and doesn't require authentication
+</script>
+
+
+
+<template>
+
+  <!-- Theme Loading State -->
+  <v-overlay v-if="themeLoading || authPageLoading" class="d-flex align-center justify-center">
+    <v-progress-circular
+      indeterminate
+      size="64"
+      color="primary"
+    />
+    <div class="text-h6 ml-4">
+      {{ themeLoading ? 'Loading theme...' : 'Loading page data...' }}
+    </div>
+  </v-overlay>
+
+  <!-- Error State -->
+  <v-alert
+    v-if="(themeError || authPageError) && !themeLoading && !authPageLoading"
+    type="error"
+    class="ma-4"
+    closable
+    @click:close="themeError = null"
+  >
+    <v-alert-title>Loading Error</v-alert-title>
+    {{ themeError || authPageError }}
+  </v-alert>
+
+  <!-- Verification Link Expired Dialog -->
+  <v-dialog :model-value="showVerificationDialog" max-width="500" persistent>
+    <v-card>
+      <v-card-title class="text-h5 py-4">
+        <v-icon color="warning" class="mr-2">mdi-email-alert</v-icon>
+        Verification Link Expired
+      </v-card-title>
+      <v-card-text>
+        <p class="text-body-1 mb-4">{{ verificationError }}</p>
+        
+        <v-alert v-if="resendSuccess" type="success" variant="tonal" class="mb-4">
+          A new verification email has been sent! Please check your inbox.
+        </v-alert>
+        
+        <p class="text-body-2 mb-3">Enter your email to receive a new verification link:</p>
+        <v-text-field
+          v-model="resendEmail"
+          label="Email Address"
+          type="email"
+          variant="outlined"
+          density="comfortable"
+          prepend-inner-icon="mdi-email"
+          :disabled="resendLoading || resendSuccess"
+        />
+      </v-card-text>
+      <v-card-actions class="pa-4 pt-0">
+        <v-spacer />
+        <v-btn
+          variant="text"
+          @click="clearVerificationError"
+        >
+          {{ resendSuccess ? 'Close' : 'Cancel' }}
+        </v-btn>
+        <v-btn
+          v-if="!resendSuccess"
+          color="primary"
+          variant="elevated"
+          :loading="resendLoading"
+          :disabled="!resendEmail || resendLoading"
+          @click="handleResendVerification"
+        >
+          Resend Verification Email
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- Main Content -->
+  <v-row
+    v-if="!themeLoading && !authPageLoading && authPageData"
+    class="fill-height auth-container"
+    align="center"
+    no-gutters
+    :style="backgroundImageStyle"
+  >
+    <!-- Form Section -->
+
+    <v-col
+      cols="12"
+      lg="5"
+      class="bg-primary d-flex align-center justify-center fill-height"
+      :order="formSectionOrder"
+    >
+
+      <div class="w-100" style="max-width: 500px">
+         <!-- Back to Home Button (static) -->
+            <v-btn
+              variant="text"
+              color="light"
+              size="small"
+              class="ma-2"
+              @click="navigateHome"
+            >
+              <v-icon start size="small">mdi-arrow-left</v-icon>
+              Back to Home
+            </v-btn>
+        <!-- Auth Form Container -->
+        <v-fade-transition mode="out-in">
+          <div v-if="isLoginMode" key="login">
+            <LoginForm @switch-to-register="switchToRegister" />
+          </div>
+          <div v-else key="register">
+            <RegisterForm @switch-to-login="switchToLogin" />
+          </div>
+        </v-fade-transition>
+
+        <!-- Additional Options -->
+        <!-- <v-card class="mt-4" variant="text">
+          <v-card-text class="text-center">
+            <v-divider class="mb-4" />
+
+            <div class="text-body-2 text-medium-emphasis mb-2">
+              Or continue with
+            </div>
+
+              Social Login Options (static) 
+            <v-row no-gutters justify="center">
+              <v-col cols="auto">
+                <v-btn
+                  variant="outlined"
+                  color="light"
+                  size="small"
+                  disabled
+                  class="mx-1"
+                >
+                  <v-icon start>mdi-google</v-icon>
+                  Google
+                </v-btn>
+              </v-col>
+              <v-col cols="auto">
+                <v-btn
+                  variant="outlined"
+                  color="light"
+                  size="small"
+                  disabled
+                  class="mx-1"
+                >
+                  <v-icon start>mdi-github</v-icon>
+                  GitHub
+                </v-btn>
+              </v-col>
+            </v-row>
+
+                <div class="text-caption text-medium-emphasis mt-2">
+              Social login coming soon
+            </div>
+          </v-card-text>
+        </v-card> -->
+
+        <!-- Toggle Mode Button (static) -->
+        <v-card class="mx-auto mt-2" variant="text">
+          <v-card-actions class="justify-center">
+
+            <v-btn
+              variant="text"
+              color="light"
+              size="medium  "
+              @click="toggleMode"
+            >
+              <v-icon start>mdi-swap-horizontal</v-icon>
+              Switch to {{ isLoginMode ? "Register" : "Login" }}
+            </v-btn>
+
+          </v-card-actions>
+
+        </v-card>
+      </div>
+
+    </v-col>
+
+    <!-- Quote Section -->
+    <v-col
+      cols="12"
+      lg="7"
+      class="d-none d-lg-flex align-center justify-center fill-height"
+      :order="quoteSectionOrder"
+    >
+      <v-card-text class="text-center">
+        <v-icon size="48"  class="mb-4 d-flex justify-start">
+          mdi-format-quote-open
+        </v-icon>
+
+        <div class="text-h4 font-weight-light mb-6">
+          {{ authPageData.quote.text }}
+        </div>
+
+        <div class="text-h6  opacity-75">
+          — {{ authPageData.quote.author }}
+          <span v-if="authPageData.quote.source" class="text-caption">
+            ({{ authPageData.quote.source }})
+          </span>
+        </div>
+
+        <div v-if="authPageData.quote.motivationalText" class="text-body-1 opacity-75">
+          {{ authPageData.quote.motivationalText }}
+        </div>
+      </v-card-text>
+
+    </v-col>
+  </v-row>
+</template>
+
+<style scoped>
+.auth-container {
+  min-height: 100vh;
+  position: relative;
+}
+
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: inherit;
+  background-size: inherit;
+  background-position: inherit;
+  background-repeat: inherit;
+  z-index: -2;
+}
+
+.auth-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: -1;
+}
+
+.auth-container > .v-row {
+  position: relative;
+  z-index: 1;
+}
+</style>
