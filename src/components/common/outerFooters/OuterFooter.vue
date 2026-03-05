@@ -96,34 +96,14 @@
       </template>
       <v-divider class="my-4" />
 
-      <v-row>
-        <v-col class="text-center" cols="12">
-          <div class="text-caption">
-            Built with
-            <template
-              v-for="(tech, index) in footerConfig.technologies"
-              :key="tech.name"
-            >
-              <v-icon
-                class="mx-1"
-                :color="tech.color"
-                :icon="tech.icon"
-                size="small"
-              />
-              {{ tech.name }}
-              <span v-if="index < footerConfig.technologies.length - 1">
-                &
-              </span>
-            </template>
-          </div>
-        </v-col>
-      </v-row>
+     
     </v-container>
   </v-footer>
 </template>
 
 <script lang="ts" setup>
 import type { UIConfig } from "@/controller/landingController";
+import { useRouter } from "vue-router";
 import { computed } from "vue";
 
 interface Props {
@@ -131,8 +111,33 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+const router = useRouter();
 
-const footerConfig = computed(() => props.config?.footer);
+const hiddenFooterPaths = [
+  "/account/home",
+  "/account/repository",   
+  "/admin/document-approvals",
+  "/admin/user-roles",
+  "/admin/user-management",
+];
+
+const normalizePath = (p: string) =>
+  (p || "/").toLowerCase().replace(/\/+$/, "") || "/";
+
+// keep template condition unchanged; control visibility here
+const footerConfig = computed(() => {
+  const base = props.config?.footer;
+  if (!base) return null;
+
+  const current = normalizePath(router.currentRoute.value.path);
+  const isHidden = hiddenFooterPaths.some((p) => {
+    const path = normalizePath(p);
+    return current === path || current.startsWith(path + "/");
+  });
+
+  return isHidden ? null : base;
+});
+
 const currentYear = computed(() => new Date().getFullYear());
 
 function openLink(url: string) {

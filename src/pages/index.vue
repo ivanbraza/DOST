@@ -85,7 +85,9 @@
           <!-- Hero Section -->
           <section class="hero-section">
             <v-container>
-              <v-row align="center" class="min-height-screen" justify="center">
+             
+              <v-row align="center" class="min-height-screen" justify="start">
+
                 <!-- Image Column -->
                 <v-col cols="12" lg="5" md="6" class="d-flex justify-center">
                   <v-img

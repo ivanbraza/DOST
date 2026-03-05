@@ -44,7 +44,7 @@ const backgroundImageStyle = computed(() => {
   if (!authPageData.value?.backgroundImage) return {};
 
   const { src, overlay } = authPageData.value.backgroundImage;
-  let style = `background-image: url('${src}'); background-size: cover; background-position: center; background-repeat: no-repeat;`;
+  let style = `background-image: url('${src}'); background-size: 1115px 945px ; background-position: right; background-repeat: no-repeat;`;
 
   if (overlay?.enabled) {
     style += ` background-blend-mode: overlay; background-color: ${overlay.color};`;
@@ -333,34 +333,30 @@ onMounted(async () => {
 
     </v-col>
 
-    <!-- Quote Section -->
+    <!-- Auth Section-->
     <v-col
       cols="12"
       lg="7"
-      class="d-none d-lg-flex align-center justify-center fill-height"
+      class="d-none d-lg-flex align-start justify-center fill-height pt-8"
       :order="quoteSectionOrder"
-    >
-      <v-card-text class="text-center">
-        <v-icon size="48"  class="mb-4 d-flex justify-start">
-          mdi-format-quote-open
-        </v-icon>
+      >    
+     
 
-        <div class="text-h4 font-weight-light mb-6">
-          {{ authPageData.quote.text }}
-        </div>
+          <div class="title-overlay pa-4 margin-top-4">
 
-        <div class="text-h6  opacity-75">
-          — {{ authPageData.quote.author }}
-          <span v-if="authPageData.quote.source" class="text-caption">
-            ({{ authPageData.quote.source }})
-          </span>
-        </div>
+              <v-img
+            src="/images/IPMMS Logo.png"
+            alt="IPPMS Logo"
+            class="rounded position-relative"
+            height="30%"
+            width="30%"
+          />
 
-        <div v-if="authPageData.quote.motivationalText" class="text-body-1 opacity-75">
-          {{ authPageData.quote.motivationalText }}
-        </div>
-      </v-card-text>
-
+            <h2 class="overlay-title">
+              Integrated Program Management and Monitoring System
+            </h2>
+          </div>
+       
     </v-col>
   </v-row>
 </template>
@@ -382,7 +378,8 @@ onMounted(async () => {
   background-size: inherit;
   background-position: inherit;
   background-repeat: inherit;
-  z-index: -2;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .auth-container::after {
@@ -391,13 +388,31 @@ onMounted(async () => {
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.9);
-  z-index: -1;
+  bottom: 0;  z-index: 1;
+  pointer-events: none;
 }
 
 .auth-container > .v-row {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+}
+
+.title-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 10;
+  max-width: 700px;
+}
+
+.overlay-title {
+  font-size: 36px;
+  font-weight: 600;
+  color: #333;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  line-height: 1.4;
 }
 </style>
