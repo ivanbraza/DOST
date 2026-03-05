@@ -56,7 +56,7 @@
         "width": 32,
         "height": 32
       },
-      "color": "primary",
+      "color": "#1A2CA3",
       "elevation": 2,
       "density": "comfortable",
       "navigationItems": [
@@ -143,12 +143,6 @@
     "subtitle": "Start Exploring the IPPMS Platform",
     "layout": {
       "quotePosition": "right"
-    },
-    "quote": {
-      "text": "Quality is never an accident; it is always the result of intelligent effort.",
-      "author": "John Ruskin",
-      "source": "Victorian Era Philosopher",
-      "motivationalText": "Begin your accreditation documentation journey today. Excellence in organization leads to excellence in outcomes."
     },
     "backgroundImage": {
       "src": "/images/dostblurred.png",

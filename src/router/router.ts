@@ -10,6 +10,7 @@ import NotFound from "@/pages/NotFound.vue";
 import ForbiddenView from "@/pages/ForbiddenView.vue";
 import AdminUserRolesView from "@/pages/admin/AdminUserRolesView.vue";
 import UserManagementView from "@/pages/admin/UserManagementView.vue";
+import SignatoryView from "@/pages/account/SignatoryView.vue";
 
 /**
  * Route definitions for the application
@@ -55,6 +56,11 @@ const routes = setupLayouts([
   {
     path: "/account/repository",
     component: () => import("../pages/account/RepositoryView.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/account/signatory",
+    component: SignatoryView,
     meta: { requiresAuth: true },
   },
   {

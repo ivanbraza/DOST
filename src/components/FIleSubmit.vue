@@ -61,11 +61,101 @@ const handleSubmitSuccess = () => {
 </script>
 
 <template>
-  <v-card class="file-submit-card" elevation="2">
 
 
-    <v-card-text>
-      <!-- Dropzone Area -->
+  <!-- Header Section -->
+   <v-card cols="12" class="file-submit-card mb-5" rounded="xl" height="150px" color="#1A2CA3">
+    <v-row class="pa-2">
+      <v-col cols="10">
+        <div class="d-flex justify-space-between align-center">
+          <div>
+            <p class="text-h7 font-weight-small ml-4 pa-2">March 03, 2026</p>
+          </div>
+        </div>
+    
+      <div>
+        <h4 class="text-h4 font-weight-bold ml-4 pa-1">Good Day, Mark</h4>
+      </div>
+
+      <div>
+        <p class="text-h7 font-weight-small ml-4 pa-2">You have <b>3 urgent tasks</b> and <b>5 pending tasks</b> due this week.</p>
+      </div>
+   
+      </v-col>
+
+      <v-col cols="2" class="d-flex justify-center align-center" md="2">
+        <div class="center">
+            <v-btn class="pa-4" rounded="xl" size="large" color="white" block><v-icon icon="mdi-plus-thick" start></v-icon>New Project</v-btn>
+        </div>
+      </v-col>
+
+    </v-row>
+</v-card>
+
+
+
+<v-row>
+  <v-col cols="12" md="3">
+    <v-card class="signatory-card" rounded="xl" elevation="0">
+  <v-card-text class="d-flex align-center justify-space-between px-4 py-3">
+    <v-icon icon="mdi-folder-outline" color="#c07a2b" size="70px" />
+
+    <div class="text-left flex-grow-1 ml-3">
+      <div class="text-center text-h6 text-grey-darken-1">Projects</div>
+      <div class="text-center text-h4 font-weight-bold text-black">1</div>
+    </div>
+  </v-card-text>
+</v-card>
+  </v-col>
+
+  <v-col cols="12" md="3">
+    <v-card class="signatory-card" rounded="xl" elevation="0">
+  <v-card-text class="d-flex align-center justify-space-between px-4 py-3">
+    <v-icon icon="mdi-folder-check-outline" color="green" size="70px" />
+
+    <div class="text-left flex-grow-1 ml-3">
+      <div class="text-center text-h6 text-grey-darken-1">Signatory Projects</div>
+      <div class="text-center text-h4 font-weight-bold text-black">444</div>
+    </div>
+  </v-card-text>
+</v-card>
+  </v-col>
+
+  <v-col cols="12" md="3">
+    <v-card class="signatory-card" rounded="xl" elevation="0">
+  <v-card-text class="d-flex align-center justify-space-between px-4 py-3">
+    <v-icon icon="mdi-alert-circle-outline" color="yellow" size="70px" />
+
+    <div class="text-left flex-grow-1 ml-3">
+      <div class="text-center text-h6 text-grey-darken-1">For Review/Signatory</div>
+      <div class="text-center text-h4 font-weight-bold text-black">9</div>
+    </div>
+  </v-card-text>
+</v-card>
+  </v-col>
+
+   <v-col cols="12" md="3">
+    <v-card class="signatory-card" rounded="xl" elevation="0">
+  <v-card-text class="d-flex align-center justify-space-between px-4 py-3">
+    <v-icon icon="mdi-close-octagon" color="red" size="70px" />
+
+    <div class="text-left flex-grow-1 ml-3">
+      <div class="text-center text-h6 text-grey-darken-1">Urgent Task</div>
+      <div class="text-center text-h4 font-weight-bold text-black">6</div>
+    </div>
+  </v-card-text>
+</v-card>
+  </v-col>
+</v-row>
+    
+  
+
+
+  <!-- <v-card class="file-submit-card" elevation="2">
+
+
+    <v-card-text> -->
+      <!-- 3Dropzone Area
       <div
         class="dropzone"
         :class="{ 'dropzone-active': isDragging, 'dropzone-disabled': isProcessing }"
@@ -92,7 +182,7 @@ const handleSubmitSuccess = () => {
             <p class="text-h6 mb-2">Drop your file here</p>
             <p class="text-body-2 text-medium-emphasis">or click to browse</p>
 
-            <!-- Supported File Type Icons -->
+            #Supported File Type Icons
             <div class="file-types-icons mt-4">
               <v-tooltip text="Images (JPG, PNG, BMP)" location="bottom">
                 <template v-slot:activator="{ props }">
@@ -147,7 +237,7 @@ const handleSubmitSuccess = () => {
         </label>
       </div>
 
-      <!-- Processing Indicator -->
+      #Processing Indicator
       <v-progress-linear
         v-if="isProcessing"
         indeterminate
@@ -155,7 +245,7 @@ const handleSubmitSuccess = () => {
         class="mt-4"
       ></v-progress-linear>
 
-      <!-- Toggle Results Button and Submit File Button -->
+      #Toggle Results Button and Submit File Button
       <div v-if="selectedFile && !isProcessing" class="mt-4 text-center d-flex justify-center gap-3">
         <v-btn
           color="primary"
@@ -179,9 +269,9 @@ const handleSubmitSuccess = () => {
         </v-btn>
       </div>
 
-      <!-- Preview and Result Section -->
+      #Preview and Result Section
       <v-row v-if="selectedFile && showResults" class="mt-4">
-        <!-- File Preview -->
+        #File Preview 
         <v-col cols="12" :md="previewUrl ? 6 : 12">
           <v-card elevation="8" v-if="previewUrl" class="preview-card">
             <v-card-title class="text-subtitle-1 d-flex justify-space-between align-center">
@@ -206,7 +296,7 @@ const handleSubmitSuccess = () => {
             </v-card-text>
           </v-card>
 
-          <!-- File Info for non-image files -->
+           #File Info for non-image files
           <v-card elevation="8" v-else class="preview-card">
             <v-card-title class="text-subtitle-1">File Information</v-card-title>
             <v-card-text class="preview-card-content">
@@ -227,7 +317,7 @@ const handleSubmitSuccess = () => {
           </v-card>
         </v-col>
 
-        <!-- Extracted Text Result -->
+        #Extracted Text Result
         <v-col cols="12" :md="previewUrl ? 6 : 12">
           <v-card elevation="8" class="preview-card">
             <v-card-title class="text-subtitle-1">
@@ -258,7 +348,7 @@ const handleSubmitSuccess = () => {
         </v-col>
       </v-row>
 
-      <!-- Action Buttons -->
+      #Action Buttons
       <v-row v-if="selectedFile && showResults" class="mt-2">
         <v-col>
           <v-btn
@@ -274,7 +364,7 @@ const handleSubmitSuccess = () => {
       </v-row>
     </v-card-text>
 
-    <!-- Full-Size Image Viewer Dialog -->
+    #Full-Size Image Viewer Dialog
     <v-dialog
       v-model="showFullSizeDialog"
       max-width="90vw"
@@ -312,7 +402,7 @@ const handleSubmitSuccess = () => {
       </v-card>
     </v-dialog>
 
-    <!-- Submit Dialog -->
+    #Submit Dialog
     <SubmitDialog
       v-model="showSubmitDialog"
       :ocr-result="ocrResult"
@@ -321,10 +411,13 @@ const handleSubmitSuccess = () => {
       @success="handleSubmitSuccess"
     />
 
-    <!-- Thank You Dialog -->
+    #Thank You Dialog
     <ThankYouDialog
       v-model="showThankYouDialog"
     />
-  </v-card>
-</template>
+  </v-card> -->
 
+
+
+
+</template>

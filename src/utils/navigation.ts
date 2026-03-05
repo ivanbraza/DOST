@@ -19,15 +19,20 @@ export const navigationConfig: NavigationGroup[] = [
     icon: 'mdi-account',
     children: [
        {
-        title: 'Home',
-        icon: 'mdi-home',
+        title: 'Dashboard',
+        icon: 'mdi-monitor-dashboard',
         route: '/account/home',
         permission: 'admin.dashboard.view'
       },
       {
-        title: 'Repository',
-        icon: 'mdi-file-document-multiple',
+        title: 'Assigned Projects',
+        icon: 'mdi-clipboard-text',
         route: '/account/repository',
+        permission: 'user.repository.view'
+      },{
+        title: 'Signatory',
+        icon: 'mdi-draw-pen',
+        route: '/account/signatory',
         permission: 'user.repository.view'
       },
     ]

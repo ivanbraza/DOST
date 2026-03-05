@@ -20,6 +20,7 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/account/RepositoryView': RouteRecordInfo<'/account/RepositoryView', '/account/RepositoryView', Record<never, never>, Record<never, never>>,
+    '/account/SignatoryView': RouteRecordInfo<'/account/SignatoryView', '/account/SignatoryView', Record<never, never>, Record<never, never>>,
     '/admin/AdminUserRolesView': RouteRecordInfo<'/admin/AdminUserRolesView', '/admin/AdminUserRolesView', Record<never, never>, Record<never, never>>,
     '/admin/components/dialogs/DeleteUserDialog': RouteRecordInfo<'/admin/components/dialogs/DeleteUserDialog', '/admin/components/dialogs/DeleteUserDialog', Record<never, never>, Record<never, never>>,
     '/admin/components/dialogs/EditUserDialog': RouteRecordInfo<'/admin/components/dialogs/EditUserDialog', '/admin/components/dialogs/EditUserDialog', Record<never, never>, Record<never, never>>,
