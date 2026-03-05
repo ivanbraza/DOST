@@ -1,7 +1,7 @@
 <template>
   <v-card-title class="text-h5 text-center py-6"> Create Account </v-card-title>
 
-  <v-card-text class="px-6 pb-6">
+  <v-card-text class="px-6 pb-6 auth-form-content">
     <v-form ref="formRef" v-model="formValid" @submit.prevent="handleRegister">
       <v-container class="pa-0">
         <v-row no-gutters>
@@ -389,3 +389,10 @@ defineExpose({
   resetForm,
 });
 </script>
+
+<style scoped>
+.auth-form-content {
+  width: 100%;
+  box-sizing: border-box;
+}
+</style>

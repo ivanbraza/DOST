@@ -236,18 +236,22 @@ onMounted(async () => {
     class="fill-height auth-container"
     align="center"
     no-gutters
-    :style="backgroundImageStyle"
   >
     <!-- Form Section -->
 
     <v-col
       cols="12"
       lg="5"
-      class="bg-primary d-flex align-center justify-center fill-height"
+      class="d-flex align-center justify-center"
       :order="formSectionOrder"
     >
-
-      <div class="w-100" style="max-width: 500px">
+      <v-sheet
+        color="primary"
+        class="d-flex flex-column justify-center px-8 py-10 w-100 h-100"
+        min-height="100vh"
+        rounded="0"
+      >
+      <div class="w-100">
          <!-- Back to Home Button (static) -->
             <v-btn
               variant="text"
@@ -330,6 +334,7 @@ onMounted(async () => {
 
         </v-card>
       </div>
+      </v-sheet>
 
     </v-col>
 
@@ -339,6 +344,7 @@ onMounted(async () => {
       lg="7"
       class="d-none d-lg-flex align-start justify-center fill-height pt-8"
       :order="quoteSectionOrder"
+      :style="backgroundImageStyle"
       >    
      
 
@@ -367,36 +373,6 @@ onMounted(async () => {
   position: relative;
 }
 
-.auth-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: inherit;
-  background-size: inherit;
-  background-position: inherit;
-  background-repeat: inherit;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.auth-container::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;  z-index: 1;
-  pointer-events: none;
-}
-
-.auth-container > .v-row {
-  position: relative;
-  z-index: 2;
-}
-
 .title-overlay {
   display: flex;
   flex-direction: column;
@@ -415,4 +391,5 @@ onMounted(async () => {
   text-align: center;
   line-height: 1.4;
 }
+
 </style>
