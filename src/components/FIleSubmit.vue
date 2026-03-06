@@ -186,7 +186,7 @@ const projects = ref([
               :tooltip="{ subtitleFormat: '[value]' }"
               gap="0"
               hover-scale="0"
-              inner-cut="60"
+              inner-cut="70"
               size="300"
               animation
               hide-slice

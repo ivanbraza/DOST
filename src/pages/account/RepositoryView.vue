@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 import InnerLayoutWrapper from '@/layouts/InnerLayoutWrapper.vue'
 import { useDocumentsDataStore } from '@/stores/documentsData'
 
 const docsStore = useDocumentsDataStore()
+const router = useRouter()
 const { loading, error, adminVersionItems } = storeToRefs(docsStore)
 
 const versionTags = (item: any): string[] => {
@@ -17,82 +19,151 @@ const versionTags = (item: any): string[] => {
   return []
 }
 
+const getProgress = (item: any): number => {
+  const status = (item.version?.status || '').toLowerCase()
+  if (status === 'approved') return 66
+  if (status === 'rejected') return 20
+  if (status === 'pending') return 48
+  return 0
+}
+
 // UI filter state (applies to version status)
-const filter = ref<'all' | 'pending' | 'approved' | 'rejected'>('pending')
+const filter = ref<'all' | 'pending' | 'approved' | 'rejected'>('all')
+
+// Temporary mock data so UI has something to render when empty
+const useMockData = ref(true)
+
+const mockAdminVersionItems = ref([
+  {
+    documentId: 'DOC-001',
+    docTitle: 'Sample Research Proposal on Smart Farming',
+    version: {
+      v: 1,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+      file_url: null,
+      tags: ['Agriculture', 'Smart Farming'],
+    },
+  },
+  {
+    documentId: 'DOC-002',
+    docTitle: 'Climate Resilience Study for Coastal Communities',
+    version: {
+      v: 2,
+      status: 'approved',
+      created_at: new Date().toISOString(),
+      file_url: null,
+      tags: ['Climate', 'Coastal'],
+    },
+  },
+  {
+    documentId: 'DOC-003',
+    docTitle: 'Aquaculture Monitoring Report for Agusan del Norte',
+    version: {
+      v: 1,
+      status: 'rejected',
+      created_at: new Date().toISOString(),
+      file_url: null,
+      tags: ['Aquaculture'],
+    },
+  },
+])
+
+const displayItems = computed(() => {
+  const source = adminVersionItems.value && adminVersionItems.value.length
+    ? adminVersionItems.value
+    : (useMockData.value ? mockAdminVersionItems.value : [])
+
+  if (filter.value === 'all') return source
+
+  return source.filter((item: any) => {
+    const status = (item.version?.status || '').toLowerCase()
+    return status === filter.value
+  })
+})
+
+const goToProject = (item: any) => {
+  const id = item.documentId
+  if (!id) return
+  router.push({ path: `/account/repository/${id}` })
+}
 
 const loadDocs = async () => {
-  await docsStore.fetchAdminVersionItems(filter.value)
+  try {
+    await docsStore.fetchAdminVersionItems(filter.value)
+  } catch (e) {
+    console.error('Failed to load admin versions', e)
+  }
 }
 
 onMounted(loadDocs)
-watch(filter, loadDocs)
+
+watch(filter, () => {
+  loadDocs()
+})
 </script>
 
 <template>
-  <InnerLayoutWrapper :hide-footer="true">
+  <InnerLayoutWrapper>
     <template #content>
-      <v-container fluid class="pa-6">
+      <v-container class="py-6">
         <!-- Header -->
-        <v-row class="mb-6">
-          <v-col cols="12" class="d-flex align-center justify-space-between">
-            <div>
-              <h1 class="text-h4 font-weight-bold mb-2">Document Approvals</h1>
-              <p class="text-body-1 text-grey-darken-1">
-                Review and approve or reject specific document versions
-              </p>
+        <v-row class="mb-6" align="center" justify="space-between">
+          <v-col cols="12" md="6">
+            <div class="text-h5 font-weight-bold mb-1">Assigned Projects</div>
+            <div class="text-body-2 text-grey-darken-1">
+              Review, approve, or reject submitted project versions.
             </div>
-            <div class="d-flex ga-2">
-              <v-select
-                v-model="filter"
-                :items="[
-                  { title: 'All', value: 'all' },
-                  { title: 'Pending', value: 'pending' },
-                  { title: 'Approved', value: 'approved' },
-                  { title: 'Rejected', value: 'rejected' }
-                ]"
-                label="Filter"
-                density="comfortable"
-                style="max-width: 200px"
-              />
-              <v-btn
-                variant="outlined"
-                prepend-icon="mdi-refresh"
-                @click="loadDocs"
-                :loading="loading"
-              >
-                Refresh
-              </v-btn>
-            </div>
+          </v-col>
+          <v-col cols="12" md="6" class="d-flex justify-end align-center ga-3">
+            <v-select
+              v-model="filter"
+              :items="[
+                { title: 'All', value: 'all' },
+                { title: 'Pending', value: 'pending' },
+                { title: 'Approved', value: 'approved' },
+                { title: 'Rejected', value: 'rejected' },
+              ]"
+              label="Filter by status"
+              density="comfortable"
+              hide-details
+              style="max-width: 220px"
+            />
+            <v-btn
+              color="primary"
+              variant="elevated"
+              prepend-icon="mdi-refresh"
+              :loading="loading"
+              @click="loadDocs()"
+            >
+              Refresh
+            </v-btn>
           </v-col>
         </v-row>
 
-        <!-- Error Alert -->
-        <v-row v-if="error">
-          <v-col cols="12">
-            <v-alert type="error" variant="tonal" closable class="mb-4">
-              {{ error }}
-            </v-alert>
-          </v-col>
-        </v-row>
+        <!-- Error (non-blocking) -->
+        <v-alert
+          v-if="error"
+          type="error"
+          variant="tonal"
+          class="mb-4"
+        >
+          {{ error }}
+        </v-alert>
 
-        <!-- Loading State -->
+        <!-- Loading, empty, grid states -->
         <v-row v-if="loading">
-          <v-col v-for="i in 8" :key="i" cols="12" sm="6" md="4" lg="3">
-            <v-skeleton-loader type="image, article" elevation="2" />
+          <v-col cols="12">
+            <v-skeleton-loader type="card" class="mb-4" />
+            <v-skeleton-loader type="card" class="mb-4" />
           </v-col>
         </v-row>
 
-        <!-- Empty State -->
-  <v-row v-else-if="adminVersionItems.length === 0">
-          <v-col cols="12">
-            <div class="text-center py-12">
-              <v-icon size="96" color="grey-lighten-1" class="mb-4">
-                mdi-file-document-off-outline
-              </v-icon>
-              <h3 class="text-h5 mb-3">No documents found</h3>
-              <p class="text-body-1 text-grey-darken-1">
-                Try changing the filter or check back later
-              </p>
+        <v-row v-else-if="!displayItems.length">
+          <v-col cols="12" class="text-center py-10">
+            <div class="text-subtitle-1 mb-2">No assigned projects found.</div>
+            <div class="text-body-2 text-grey-darken-1">
+              Try changing the filter or refreshing the list.
             </div>
           </v-col>
         </v-row>
@@ -100,49 +171,53 @@ watch(filter, loadDocs)
         <!-- Versions Grid -->
         <v-row v-else>
           <v-col
-            v-for="item in adminVersionItems"
+            v-for="item in displayItems"
             :key="item.documentId + '-' + (item.version?.v || 0)"
             cols="12"
-            sm="6"
-            md="4"
-            lg="3"
           >
-            <v-card class="mx-auto" elevation="2">
-              <v-card-text class="pa-4">
-                <div class="d-flex align-center justify-space-between mb-3">
-                  <div class="d-flex align-center ga-2">
-                    <v-avatar size="40" color="primary">
-                      <v-icon color="white">mdi-file-document</v-icon>
-                    </v-avatar>
-                    <v-btn
-                      :disabled="!item.version?.file_url"
-                      color="primary"
-                      variant="text"
-                      prepend-icon="mdi-open-in-new"
-                      size="small"
-                      @click="docsStore.openDocumentFile(item.version?.file_url)"
-                    >
-                      Open
-                    </v-btn>
+            <v-card
+              class="project-card"
+              elevation="2"
+              @click="goToProject(item)"
+            >
+              <v-card-text class="pa-5">
+                <!-- Title + status chip -->
+                <div class="d-flex justify-space-between align-start mb-3">
+                  <div class="text-subtitle-1 font-weight-bold project-title">
+                    {{ item.docTitle || 'Untitled Document' }}
                   </div>
                   <v-chip
                     v-if="item.version?.status"
                     size="small"
                     :color="item.version?.status === 'approved' ? 'success' : item.version?.status === 'rejected' ? 'error' : 'info'"
-                    variant="tonal"
+                    variant="elevated"
                   >
-                    {{ item.version?.status || 'pending' }}
+                    {{ (item.version?.status || 'pending').toUpperCase() }}
                   </v-chip>
                 </div>
 
-                <h3 class="text-h6 font-weight-medium mb-1 d-flex align-center ga-2">
-                  <span>{{ item.docTitle || 'Untitled Document' }}</span>
-                  <v-chip size="small" variant="outlined">v{{ item.version?.v ?? '?' }}</v-chip>
-                </h3>
+                <!-- Program / description -->
                 <div class="text-caption text-grey-darken-1 mb-3">
-                  {{ item.version?.created_at ? new Date(item.version.created_at).toLocaleString() : '—' }}
+                  Community Empowerment thru Science and Technology &amp; Smart and Sustainable Communities Program
                 </div>
 
+                <!-- Meta row -->
+                <div class="d-flex flex-wrap align-center text-caption text-grey-darken-1 mb-4 ga-6 meta-row">
+                  <div class="d-flex align-center ga-1">
+                    <v-icon size="16">mdi-office-building-marker</v-icon>
+                    <span>Provincial Science and Technology Office-Agusan del Norte</span>
+                  </div>
+                  <div class="d-flex align-center ga-1">
+                    <v-icon size="16">mdi-account</v-icon>
+                    <span>Meriam B. Bouquia</span>
+                  </div>
+                  <div class="d-flex align-center ga-1">
+                    <v-icon size="16">mdi-calendar</v-icon>
+                    <span>January 2025 - December 2025</span>
+                  </div>
+                </div>
+
+                <!-- Optional tags row -->
                 <div v-if="versionTags(item).length" class="d-flex flex-wrap ga-2 mb-3">
                   <v-chip
                     v-for="tag in versionTags(item)"
@@ -156,15 +231,37 @@ watch(filter, loadDocs)
                   </v-chip>
                 </div>
 
-                <v-card-actions class="px-0 py-0 mt-2 actions-tight">
-                  <div class="d-flex justify-space-between align-center w-100">
+                <!-- Progress -->
+                <div class="mb-4">
+                  <div class="d-flex justify-space-between mb-1 text-caption">
+                    <span>Overall Progress</span>
+                    <span>{{ getProgress(item) }}%</span>
+                  </div>
+                  <v-progress-linear
+                    :model-value="getProgress(item)"
+                    color="primary"
+                    height="12"
+                    rounded
+                  />
+                </div>
+
+                <v-divider class="my-4" />
+
+                <!-- Footer -->
+                <div class="d-flex justify-space-between align-center">
+                  <div class="text-caption text-grey-darken-1">
+                    Total Cost: <strong>₱ 7M</strong>
+                  </div>
+                  <div
+                    v-if="(item.version?.status || '').toLowerCase() === 'pending'"
+                    class="d-flex ga-2"
+                  >
                     <v-btn
                       color="success"
                       variant="elevated"
                       prepend-icon="mdi-check"
                       size="small"
-                      :disabled="(item.version?.status || '').toLowerCase() !== 'pending'"
-                      @click="docsStore.approveVersion(item.documentId, (item.version?.v || 0), filter)"
+                      @click.stop="docsStore.approveVersion(item.documentId, (item.version?.v || 0), filter)"
                     >
                       Approve
                     </v-btn>
@@ -173,13 +270,12 @@ watch(filter, loadDocs)
                       variant="elevated"
                       prepend-icon="mdi-close"
                       size="small"
-                      :disabled="(item.version?.status || '').toLowerCase() !== 'pending'"
-                      @click="docsStore.rejectVersion(item.documentId, (item.version?.v || 0), filter)"
+                      @click.stop="docsStore.rejectVersion(item.documentId, (item.version?.v || 0), filter)"
                     >
                       Reject
                     </v-btn>
                   </div>
-                </v-card-actions>
+                </div>
               </v-card-text>
             </v-card>
           </v-col>
@@ -190,11 +286,20 @@ watch(filter, loadDocs)
 </template>
 
 <style scoped>
-.v-card {
+.project-card {
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  cursor: pointer;
 }
-.v-card:hover {
+.project-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.project-title {
+  max-width: 80%;
+}
+
+.meta-row {
+  row-gap: 8px;
 }
 </style>

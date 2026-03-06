@@ -230,7 +230,7 @@
 
     <!-- Desktop Actions -->
     <template #append>
-      <!-- Theme Toggle Button -->
+      <!-- Theme Toggle Button
       <v-btn
         :loading="isLoadingTheme"
         size="small"
@@ -241,7 +241,7 @@
         <v-tooltip activator="parent" location="bottom">
           {{ themeTooltip }}
         </v-tooltip>
-      </v-btn>
+      </v-btn> -->
 
       <!-- User Slug Name Component -->
       <SlugName />

@@ -59,6 +59,11 @@ const routes = setupLayouts([
     meta: { requiresAuth: true },
   },
   {
+    path: "/account/repository/:id",
+    component: () => import("../pages/account/ProjectDetailView.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/account/signatory",
     component: SignatoryView,
     meta: { requiresAuth: true },
