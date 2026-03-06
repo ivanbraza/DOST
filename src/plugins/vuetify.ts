@@ -6,6 +6,7 @@
 
 // Composables
 import { createVuetify } from 'vuetify'
+import { VPie } from 'vuetify/labs/VPie'
 
 // Styles
 import '@mdi/font/css/materialdesignicons.css'
@@ -14,6 +15,9 @@ import 'vuetify/styles'
 // Create vuetify instance with minimal initial configuration
 // Theme will be loaded dynamically from external-page.json
 const vuetify = createVuetify({
+  components: {
+    VPie,
+  },
   theme: {
     defaultTheme: 'light',
     themes: {

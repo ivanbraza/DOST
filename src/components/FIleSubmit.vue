@@ -58,39 +58,62 @@ const handleSubmitSuccess = () => {
   // Show thank you dialog after clearing
   showThankYouDialog.value = true
 }
+
+//item for pie chart
+ const items = [
+  { key: 1, title: 'Draft', value: 5, color: '#9CA3AF' },
+  { key: 2, title: 'Approved', value: 10, color: '#3B82F6' },
+  { key: 3, title: 'Ongoing', value: 15, color: '#F59E0B' },
+  { key: 4, title: 'Completed', value: 5, color: '#10B981' },
+ ]
+
+
+const projects = ref([
+  {
+    name: "SMARTER AGUSAN: Agusan del Norte's Development thru Value-Addition...",
+    progress: 48,
+    color: "blue-darken-2"
+  },
+  {
+    name: "Smart Aquaculture Monitoring System Using IoT for Tilapia Production",
+    progress: 66,
+    color: "green"
+  },
+  {
+    name: "Development of Climate-Resilient Rice Varieties for Coastal Lowland Areas",
+    progress: 75,
+    color: "orange"
+  },
+  {
+    name: "Production of Rice Varieties for Coastal Lowland Areas",
+    progress: 50,
+    color: "yellow"
+  }
+])
 </script>
 
 <template>
 
 
   <!-- Header Section -->
-   <v-card cols="12" class="file-submit-card mb-5" rounded="xl" height="150px" color="#1A2CA3">
-    <v-row class="pa-2">
-      <v-col cols="10">
-        <div class="d-flex justify-space-between align-center">
-          <div>
-            <p class="text-h7 font-weight-small ml-4 pa-2">March 03, 2026</p>
-          </div>
-        </div>
-    
-      <div>
-        <h4 class="text-h4 font-weight-bold ml-4 pa-1">Good Day, Mark</h4>
-      </div>
-
-      <div>
-        <p class="text-h7 font-weight-small ml-4 pa-2">You have <b>3 urgent tasks</b> and <b>5 pending tasks</b> due this week.</p>
-      </div>
-   
+   <v-card class="dashboard-card mb-5" rounded="xl" color="#1A2CA3">
+    <v-row class="pa-4" align="center">
+      <!-- Text: full width on xs, 10/12 on md+ -->
+      <v-col cols="12" md="10">
+        <p class="text-h7 font-weight-small ml-2 mb-2">March 03, 2026</p>
+        <h4 class="text-h4 font-weight-bold ml-2">Good Day, Mark</h4>
       </v-col>
 
-      <v-col cols="2" class="d-flex justify-center align-center" md="2">
-        <div class="center">
-            <v-btn class="pa-4" rounded="xl" size="large" color="white" block><v-icon icon="mdi-plus-thick" start></v-icon>New Project</v-btn>
-        </div>
+      <!-- Button: full width below text on xs, right on md+ -->
+      <v-col cols="12" md="2" class="d-flex justify-center justify-md-end mt-3 mt-md-0">
+        <v-btn class="pa-3" rounded="xl" size="large" color="white" block>
+          <v-icon icon="mdi-plus-thick" start></v-icon>
+          New Project
+        </v-btn>
       </v-col>
 
     </v-row>
-</v-card>
+  </v-card>
 
 
 
@@ -127,7 +150,7 @@ const handleSubmitSuccess = () => {
     <v-icon icon="mdi-alert-circle-outline" color="yellow" size="70px" />
 
     <div class="text-left flex-grow-1 ml-3">
-      <div class="text-center text-h6 text-grey-darken-1">For Review/Signatory</div>
+      <div class="text-center text-h6 text-grey-darken-1">Needs Review</div>
       <div class="text-center text-h4 font-weight-bold text-black">9</div>
     </div>
   </v-card-text>
@@ -146,6 +169,73 @@ const handleSubmitSuccess = () => {
   </v-card-text>
 </v-card>
   </v-col>
+</v-row>
+
+<v-row>
+
+  <v-col>
+      <v-card cols="12" class="proj-status" rounded="xl">
+          <div class="d-flex align-center px-4 pt-3">
+            <v-icon icon="mdi-chart-arc" color="black" size="50px"></v-icon>
+            <div class="text-h5 font-weight-bold text-black ml-3">Project Status Chart</div>
+          </div>
+          <div class="d-flex justify-center py-3">
+            <v-pie
+              :items="items"
+              :legend="{ textFormat: '[title] ([value])' }"
+              :tooltip="{ subtitleFormat: '[value]' }"
+              gap="0"
+              hover-scale="0"
+              inner-cut="60"
+              size="300"
+              animation
+              hide-slice
+            />
+          </div>
+             </v-card>
+    </v-col>
+
+
+  <v-col cols="12" md="6">
+    <v-card class="proj-progress pa-4" rounded="xl">
+
+      <!-- Header -->
+      <div class="d-flex align-center mb-4">
+        <v-icon icon="mdi-poll" color="white" size="32" class="mr-2"/>
+        <div class="text-h6 font-weight-bold text-white">
+          Project Progress
+        </div>
+      </div>
+
+      <!-- Project List -->
+      <v-sheet
+        v-for="project in projects"
+        :key="project.name"
+        class="pa-3 mb-3"
+        rounded="lg"
+        color="white"
+      >
+        <div class="text-body-2 font-weight-medium mb-2">
+          {{ project.name }}
+        </div>
+
+        <div class="d-flex align-center">
+          <v-progress-linear
+            :model-value="project.progress"
+            :color="project.color"
+            height="15"
+            rounded
+            class="flex-grow-1 mr-2 progress-bar"
+          />
+
+          <span class="text-h6"> {{ project.progress }}%</span>
+        </div>
+      </v-sheet>
+
+    </v-card>
+  </v-col>
+
+
 </v-row>
     
   
